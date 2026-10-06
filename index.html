@@ -1,25 +1,220 @@
-<!doctype html><html><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#173f5f"><title>Leak Detection Lookup</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#f3f5f7;color:#17202a;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-.app{max-width:520px;min-height:100vh;margin:auto;padding:24px 18px;display:flex;flex-direction:column}
-header{text-align:center;margin:8px 0 24px}h1{margin:0;font-size:26px}.sub{margin-top:7px;color:#66727c;font-size:14px}
-label{display:block;font-weight:700;margin-bottom:8px}input{width:100%;height:76px;border:2px solid #b9c4cc;border-radius:14px;background:#fff;text-align:center;font-size:36px;font-weight:700}
-button{width:100%;height:62px;border:0;border-radius:14px;margin-top:14px;background:#173f5f;color:white;font-size:20px;font-weight:800}
-.clear{background:#dfe5e9;color:#25313a;font-size:17px;height:50px}
-.result{margin-top:22px;background:#fff;border-radius:18px;padding:24px 16px;text-align:center;box-shadow:0 3px 14px #0001}
-.result-label{font-size:14px;font-weight:800;letter-spacing:1.1px;color:#66727c}.grid{font-size:60px;font-weight:900;margin-top:10px}.hint{margin-top:8px;color:#68747d;font-size:14px}.footer{margin-top:auto;text-align:center;padding-top:22px;color:#8b959d;font-size:11px}
-</style></head><body><main class="app">
-<header><h1>Leak Detection Lookup</h1><div class="sub">Enter the footage shown by the detection panel</div></header>
-<label for="feet">Leak footage</label><input id="feet" inputmode="numeric" autocomplete="off" placeholder="1500">
-<button onclick="lookup()">LOOK UP LOCATION</button><button class="clear" onclick="clearAll()">CLEAR</button>
-<section class="result"><div class="result-label">SEARCH THIS GRID LOCATION</div><div id="grid" class="grid">—</div><div id="hint" class="hint">Enter a footage reading above</div></section>
-<div class="footer">Offline lookup • K200 leak detection plan</div></main>
-<script>
-const points=[{"grid": "AZ-30", "feet": 14}, {"grid": "AS-26", "feet": 16}, {"grid": "BA-32", "feet": 20}, {"grid": "AP-26", "feet": 22}, {"grid": "BA-35", "feet": 26}, {"grid": "BA-38", "feet": 32}, {"grid": "BA-41", "feet": 37}, {"grid": "BA-44", "feet": 41}, {"grid": "BA-47", "feet": 47}, {"grid": "BA-50", "feet": 53}, {"grid": "BA-53", "feet": 58}, {"grid": "BA-56", "feet": 64}, {"grid": "BA-59", "feet": 71}, {"grid": "BA-62", "feet": 77}, {"grid": "BA-65", "feet": 84}, {"grid": "BA-68", "feet": 90}, {"grid": "BC-68", "feet": 97}, {"grid": "BC-65", "feet": 104}, {"grid": "BC-62", "feet": 110}, {"grid": "BC-59", "feet": 115}, {"grid": "BC-56", "feet": 122}, {"grid": "AI-26", "feet": 128}, {"grid": "BC-53", "feet": 128}, {"grid": "BC-50", "feet": 133}, {"grid": "BC-47", "feet": 138}, {"grid": "BC-44", "feet": 145}, {"grid": "BC-41", "feet": 152}, {"grid": "BC-38", "feet": 159}, {"grid": "BC-35", "feet": 164}, {"grid": "BC-32", "feet": 171}, {"grid": "BD-30", "feet": 174}, {"grid": "BE-32", "feet": 185}, {"grid": "BE-35", "feet": 187}, {"grid": "BE-38", "feet": 192}, {"grid": "BE-41", "feet": 199}, {"grid": "BE-44", "feet": 207}, {"grid": "BE-47", "feet": 212}, {"grid": "AG-26", "feet": 217}, {"grid": "BE-50", "feet": 219}, {"grid": "BE-53", "feet": 224}, {"grid": "BE-56", "feet": 229}, {"grid": "BE-59", "feet": 237}, {"grid": "BE-62", "feet": 244}, {"grid": "BE-65", "feet": 249}, {"grid": "BE-68", "feet": 255}, {"grid": "BG-68", "feet": 262}, {"grid": "BG-65", "feet": 268}, {"grid": "BG-62", "feet": 275}, {"grid": "BG-59", "feet": 283}, {"grid": "BG-56", "feet": 289}, {"grid": "BG-53", "feet": 294}, {"grid": "BG-50", "feet": 302}, {"grid": "BG-47", "feet": 307}, {"grid": "AC-26", "feet": 313}, {"grid": "BG-44", "feet": 315}, {"grid": "BG-41", "feet": 321}, {"grid": "BG-38", "feet": 329}, {"grid": "BG-35", "feet": 334}, {"grid": "BG-32", "feet": 340}, {"grid": "BH-30", "feet": 345}, {"grid": "BI-32", "feet": 353}, {"grid": "AY-28", "feet": 357}, {"grid": "BI-35", "feet": 359}, {"grid": "BI-38", "feet": 368}, {"grid": "BI-41", "feet": 371}, {"grid": "BI-44", "feet": 374}, {"grid": "BI-47", "feet": 377}, {"grid": "BI-50", "feet": 382}, {"grid": "BI-53", "feet": 388}, {"grid": "BI-56", "feet": 394}, {"grid": "BI-59", "feet": 402}, {"grid": "AB-30", "feet": 406}, {"grid": "BI-62", "feet": 408}, {"grid": "BI-65", "feet": 414}, {"grid": "BI-68", "feet": 420}, {"grid": "BK-68", "feet": 426}, {"grid": "BK-65", "feet": 432}, {"grid": "BK-62", "feet": 441}, {"grid": "BK-59", "feet": 447}, {"grid": "BK-56", "feet": 453}, {"grid": "BK-53", "feet": 459}, {"grid": "AY-32", "feet": 461}, {"grid": "BK-50", "feet": 465}, {"grid": "BK-47", "feet": 471}, {"grid": "BK-44", "feet": 477}, {"grid": "BK-38", "feet": 490}, {"grid": "BK-35", "feet": 494}, {"grid": "BK-32", "feet": 499}, {"grid": "BL-30", "feet": 506}, {"grid": "AB-34", "feet": 508}, {"grid": "BM-32", "feet": 512}, {"grid": "BM-35", "feet": 518}, {"grid": "BM-38", "feet": 525}, {"grid": "BM-41", "feet": 531}, {"grid": "BM-44", "feet": 538}, {"grid": "BM-47", "feet": 541}, {"grid": "BM-50", "feet": 547}, {"grid": "BM-53", "feet": 551}, {"grid": "BM-56", "feet": 557}, {"grid": "AY-36", "feet": 560}, {"grid": "BM-59", "feet": 564}, {"grid": "BM-62", "feet": 570}, {"grid": "BM-65", "feet": 577}, {"grid": "BM-68", "feet": 584}, {"grid": "BO-68", "feet": 591}, {"grid": "BO-65", "feet": 597}, {"grid": "BO-62", "feet": 604}, {"grid": "AB-38", "feet": 607}, {"grid": "BO-59", "feet": 611}, {"grid": "BO-56", "feet": 618}, {"grid": "BO-53", "feet": 625}, {"grid": "BO-50", "feet": 632}, {"grid": "BO-47", "feet": 637}, {"grid": "BO-44", "feet": 642}, {"grid": "BO-41", "feet": 649}, {"grid": "BO-38", "feet": 657}, {"grid": "AY-40", "feet": 659}, {"grid": "BO-35", "feet": 662}, {"grid": "BO-32", "feet": 667}, {"grid": "AB-42", "feet": 714}, {"grid": "AY-44", "feet": 763}, {"grid": "AB-46", "feet": 810}, {"grid": "AY-48", "feet": 859}, {"grid": "AB-50", "feet": 905}, {"grid": "AY-52", "feet": 961}, {"grid": "AB-54", "feet": 1010}, {"grid": "AY-56", "feet": 1061}, {"grid": "AB-58", "feet": 1116}, {"grid": "AB-62", "feet": 1199}, {"grid": "AB-70", "feet": 1278}, {"grid": "AB-70", "feet": 1361}];
-function lookup(){const n=Number(document.getElementById('feet').value);if(!Number.isFinite(n)){document.getElementById('grid').textContent='—';document.getElementById('hint').textContent='Please enter a number';return}
-let b=points[0],d=Math.abs(b.feet-n);for(const p of points){let x=Math.abs(p.feet-n);if(x<d){b=p;d=x}}document.getElementById('grid').textContent=b.grid;document.getElementById('hint').textContent='Nearest mapped location'}
-function clearAll(){document.getElementById('feet').value='';document.getElementById('grid').textContent='—';document.getElementById('hint').textContent='Enter a footage reading above';document.getElementById('feet').focus()}
-document.getElementById('feet').addEventListener('keydown',e=>{if(e.key==='Enter')lookup()});
-</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17365d">
+  <title>K200 Leak Detection Lookup</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #17365d;
+      --blue: #e7f0f8;
+      --line: #c9d4df;
+      --text: #17212b;
+      --muted: #5c6b78;
+      --green: #08783e;
+      --green-bg: #e8f6ee;
+      --red: #a30d1b;
+      --red-bg: #fff0f1;
+      --amber: #8a5a00;
+      --amber-bg: #fff8df;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: #f3f6f9;
+    }
+    .app {
+      width: min(100%, 520px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: max(22px, env(safe-area-inset-top)) 18px max(24px, env(safe-area-inset-bottom));
+    }
+    header { margin-bottom: 22px; text-align: center; }
+    header h1 { margin: 0; color: var(--navy); font-size: clamp(1.5rem, 7vw, 2rem); line-height: 1.12; }
+    header p { margin: 7px 0 0; color: var(--muted); font-size: .95rem; }
+    .panel {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 28px rgba(23, 54, 93, .09);
+    }
+    label { display: block; margin: 0 0 7px; color: var(--navy); font-weight: 750; }
+    select, input, button {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 11px;
+      font: inherit;
+    }
+    select, input {
+      border: 2px solid #9fb1c2;
+      background: #fff;
+      color: var(--text);
+      padding: 10px 13px;
+      font-size: 1.1rem;
+    }
+    select:focus, input:focus { outline: 3px solid rgba(44, 116, 179, .22); border-color: #2c74b3; }
+    .field + .field { margin-top: 17px; }
+    .hint { margin: 6px 1px 0; color: var(--muted); font-size: .82rem; }
+    button {
+      margin-top: 20px;
+      border: 0;
+      background: var(--navy);
+      color: #fff;
+      font-size: 1.08rem;
+      font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    button:active { transform: translateY(1px); background: #102c4f; }
+    .result {
+      display: none;
+      margin-top: 18px;
+      padding: 20px 18px;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      text-align: center;
+    }
+    .result.show { display: block; }
+    .result.nccs { border-color: var(--green); background: var(--green-bg); }
+    .result.itsd { border-color: var(--red); background: var(--red-bg); }
+    .result.warning { border-color: #d29a28; background: var(--amber-bg); }
+    .result-label { color: var(--muted); font-size: .8rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .location { margin-top: 3px; color: var(--navy); font-size: clamp(2.5rem, 14vw, 4.4rem); font-weight: 900; line-height: 1; letter-spacing: -.03em; }
+    .badge { display: inline-block; margin-top: 12px; padding: 6px 11px; border-radius: 999px; color: #fff; font-size: .84rem; font-weight: 900; letter-spacing: .04em; }
+    .nccs .badge { background: var(--green); }
+    .itsd .badge { background: var(--red); }
+    .alert { margin: 12px 0 0; font-size: 1rem; font-weight: 800; }
+    .itsd .alert { color: var(--red); }
+    .nccs .alert { color: var(--green); }
+    .detail { margin: 8px 0 0; color: var(--muted); font-size: .88rem; }
+    .edge-note { display: none; margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--amber-bg); color: var(--amber); font-size: .82rem; font-weight: 700; }
+    .edge-note.show { display: block; }
+    footer { margin-top: 17px; color: var(--muted); text-align: center; font-size: .75rem; }
+    @media (max-width: 360px) { .app { padding-left: 12px; padding-right: 12px; } .panel { padding: 16px; } }
+    @media print { body { background: #fff; } .app { width: 100%; padding: 0; } .panel { box-shadow: none; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>K200 Leak Detection</h1>
+      <p>Footage-to-grid location lookup</p>
+    </header>
+
+    <section class="panel" aria-labelledby="lookup-heading">
+      <h2 id="lookup-heading" style="position:absolute;left:-9999px">Leak location lookup</h2>
+      <div class="field">
+        <label for="zone">Detection zone</label>
+        <select id="zone">
+          <option value="zone1">Zone 1</option>
+          <option value="zone2">Zone 2</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="footage">Detected footage</label>
+        <input id="footage" type="number" inputmode="decimal" min="0" step="any" placeholder="Enter footage" autocomplete="off">
+        <p class="hint" id="rangeHint">Mapped points: 4–1,390 ft</p>
+      </div>
+
+      <button id="locate" type="button">Find grid location</button>
+
+      <div id="result" class="result" role="status" aria-live="polite">
+        <div class="result-label">Nearest grid location</div>
+        <div id="location" class="location">—</div>
+        <div id="badge" class="badge"></div>
+        <p id="alert" class="alert"></p>
+        <p id="detail" class="detail"></p>
+        <p id="edgeNote" class="edge-note"></p>
+      </div>
+    </section>
+
+    <footer>Works offline · Uses the edited NCCS and ITSD lookup sheets</footer>
+  </main>
+
+  <script>
+    const LOOKUP_DATA = {"zone1":[{"footage":4,"location":"AY-26","jurisdiction":"NCCS"},{"footage":8,"location":"AV-26","jurisdiction":"NCCS"},{"footage":16,"location":"AS-26","jurisdiction":"NCCS"},{"footage":22,"location":"AP-26","jurisdiction":"NCCS"},{"footage":26,"location":"AM-26","jurisdiction":"NCCS"},{"footage":43,"location":"AM-17","jurisdiction":"ITSD"},{"footage":49,"location":"AM-14","jurisdiction":"ITSD"},{"footage":58,"location":"AM-11","jurisdiction":"ITSD"},{"footage":66,"location":"AM-08","jurisdiction":"ITSD"},{"footage":71,"location":"AM-05","jurisdiction":"ITSD"},{"footage":79,"location":"AK-05","jurisdiction":"ITSD"},{"footage":84,"location":"AK-08","jurisdiction":"ITSD"},{"footage":92,"location":"AK-11","jurisdiction":"ITSD"},{"footage":99,"location":"AK-14","jurisdiction":"ITSD"},{"footage":106,"location":"AK-17","jurisdiction":"ITSD"},{"footage":110,"location":"AK-20","jurisdiction":"ITSD"},{"footage":115,"location":"AK-23","jurisdiction":"ITSD"},{"footage":119,"location":"AK-26","jurisdiction":"NCCS"},{"footage":128,"location":"AI-26","jurisdiction":"NCCS"},{"footage":149,"location":"AI-17","jurisdiction":"ITSD"},{"footage":154,"location":"AI-14","jurisdiction":"ITSD"},{"footage":161,"location":"AI-11","jurisdiction":"ITSD"},{"footage":164,"location":"AI-08","jurisdiction":"ITSD"},{"footage":167,"location":"AI-05","jurisdiction":"ITSD"},{"footage":175,"location":"AG-05","jurisdiction":"ITSD"},{"footage":180,"location":"AG-08","jurisdiction":"ITSD"},{"footage":185,"location":"AG-11","jurisdiction":"ITSD"},{"footage":190,"location":"AG-14","jurisdiction":"ITSD"},{"footage":199,"location":"AG-17","jurisdiction":"ITSD"},{"footage":204,"location":"AG-20","jurisdiction":"ITSD"},{"footage":209,"location":"AG-23","jurisdiction":"ITSD"},{"footage":217,"location":"AG-26","jurisdiction":"NCCS"},{"footage":222,"location":"AE-26","jurisdiction":"NCCS"},{"footage":242,"location":"AE-17","jurisdiction":"ITSD"},{"footage":247,"location":"AE-14","jurisdiction":"ITSD"},{"footage":252,"location":"AE-11","jurisdiction":"ITSD"},{"footage":260,"location":"AE-08","jurisdiction":"ITSD"},{"footage":265,"location":"AE-05","jurisdiction":"ITSD"},{"footage":270,"location":"AC-05","jurisdiction":"ITSD"},{"footage":275,"location":"AC-08","jurisdiction":"ITSD"},{"footage":279,"location":"AC-11","jurisdiction":"ITSD"},{"footage":286,"location":"AC-14","jurisdiction":"ITSD"},{"footage":291,"location":"AC-17","jurisdiction":"ITSD"},{"footage":297,"location":"AC-20","jurisdiction":"ITSD"},{"footage":305,"location":"AC-23","jurisdiction":"ITSD"},{"footage":313,"location":"AC-26","jurisdiction":"NCCS"},{"footage":318,"location":"AE-27","jurisdiction":"NCCS"},{"footage":324,"location":"AH-27","jurisdiction":"NCCS"},{"footage":327,"location":"AK-27","jurisdiction":"NCCS"},{"footage":332,"location":"AN-27","jurisdiction":"NCCS"},{"footage":337,"location":"AQ-27","jurisdiction":"NCCS"},{"footage":343,"location":"AT-27","jurisdiction":"NCCS"},{"footage":351,"location":"AW-27","jurisdiction":"NCCS"},{"footage":357,"location":"AY-28","jurisdiction":"NCCS"},{"footage":363,"location":"AW-29","jurisdiction":"NCCS"},{"footage":371,"location":"AT-29","jurisdiction":"NCCS"},{"footage":374,"location":"AQ-29","jurisdiction":"NCCS"},{"footage":382,"location":"AN-29","jurisdiction":"NCCS"},{"footage":388,"location":"AK-29","jurisdiction":"NCCS"},{"footage":394,"location":"AH-29","jurisdiction":"NCCS"},{"footage":400,"location":"AE-29","jurisdiction":"NCCS"},{"footage":406,"location":"AB-30","jurisdiction":"NCCS"},{"footage":414,"location":"AE-31","jurisdiction":"NCCS"},{"footage":421,"location":"AH-31","jurisdiction":"NCCS"},{"footage":428,"location":"AK-31","jurisdiction":"NCCS"},{"footage":434,"location":"AN-31","jurisdiction":"NCCS"},{"footage":440,"location":"AQ-31","jurisdiction":"NCCS"},{"footage":449,"location":"AT-31","jurisdiction":"NCCS"},{"footage":455,"location":"AW-31","jurisdiction":"NCCS"},{"footage":461,"location":"AY-32","jurisdiction":"NCCS"},{"footage":467,"location":"AW-33","jurisdiction":"NCCS"},{"footage":473,"location":"AT-33","jurisdiction":"NCCS"},{"footage":479,"location":"AQ-33","jurisdiction":"NCCS"},{"footage":486,"location":"AN-33","jurisdiction":"NCCS"},{"footage":492,"location":"AK-33","jurisdiction":"NCCS"},{"footage":498,"location":"AH-33","jurisdiction":"NCCS"},{"footage":501,"location":"AE-33","jurisdiction":"NCCS"},{"footage":508,"location":"AB-34","jurisdiction":"NCCS"},{"footage":514,"location":"AE-35","jurisdiction":"NCCS"},{"footage":524,"location":"AH-35","jurisdiction":"NCCS"},{"footage":530,"location":"AK-35","jurisdiction":"NCCS"},{"footage":537,"location":"AN-35","jurisdiction":"NCCS"},{"footage":543,"location":"AQ-35","jurisdiction":"NCCS"},{"footage":550,"location":"AT-35","jurisdiction":"NCCS"},{"footage":553,"location":"AW-35","jurisdiction":"NCCS"},{"footage":560,"location":"AY-36","jurisdiction":"NCCS"},{"footage":566,"location":"AW-37","jurisdiction":"NCCS"},{"footage":573,"location":"AT-37","jurisdiction":"NCCS"},{"footage":580,"location":"AQ-37","jurisdiction":"NCCS"},{"footage":586,"location":"AN-37","jurisdiction":"NCCS"},{"footage":593,"location":"AK-37","jurisdiction":"NCCS"},{"footage":597,"location":"AH-37","jurisdiction":"NCCS"},{"footage":600,"location":"AE-37","jurisdiction":"NCCS"},{"footage":607,"location":"AB-38","jurisdiction":"NCCS"},{"footage":617,"location":"AE-39","jurisdiction":"NCCS"},{"footage":624,"location":"AH-39","jurisdiction":"NCCS"},{"footage":631,"location":"AK-39","jurisdiction":"NCCS"},{"footage":642,"location":"AN-39","jurisdiction":"NCCS"},{"footage":645,"location":"AQ-39","jurisdiction":"NCCS"},{"footage":649,"location":"AT-39","jurisdiction":"NCCS"},{"footage":652,"location":"AW-39","jurisdiction":"NCCS"},{"footage":659,"location":"AY-40","jurisdiction":"NCCS"},{"footage":664,"location":"AW-41","jurisdiction":"NCCS"},{"footage":670,"location":"AT-41","jurisdiction":"NCCS"},{"footage":677,"location":"AQ-41","jurisdiction":"NCCS"},{"footage":688,"location":"AN-41","jurisdiction":"NCCS"},{"footage":692,"location":"AK-41","jurisdiction":"NCCS"},{"footage":699,"location":"AH-41","jurisdiction":"NCCS"},{"footage":707,"location":"AE-41","jurisdiction":"NCCS"},{"footage":714,"location":"AB-42","jurisdiction":"NCCS"},{"footage":721,"location":"AE-43","jurisdiction":"NCCS"},{"footage":729,"location":"AH-43","jurisdiction":"NCCS"},{"footage":737,"location":"AK-43","jurisdiction":"NCCS"},{"footage":740,"location":"AN-43","jurisdiction":"NCCS"},{"footage":744,"location":"AQ-43","jurisdiction":"NCCS"},{"footage":751,"location":"AT-43","jurisdiction":"NCCS"},{"footage":759,"location":"AW-43","jurisdiction":"NCCS"},{"footage":763,"location":"AY-44","jurisdiction":"NCCS"},{"footage":767,"location":"AW-45","jurisdiction":"NCCS"},{"footage":775,"location":"AT-45","jurisdiction":"NCCS"},{"footage":782,"location":"AQ-45","jurisdiction":"NCCS"},{"footage":786,"location":"AN-45","jurisdiction":"NCCS"},{"footage":794,"location":"AK-45","jurisdiction":"NCCS"},{"footage":800,"location":"AH-45","jurisdiction":"NCCS"},{"footage":806,"location":"AE-45","jurisdiction":"NCCS"},{"footage":810,"location":"AB-46","jurisdiction":"NCCS"},{"footage":818,"location":"AE-47","jurisdiction":"NCCS"},{"footage":822,"location":"AH-47","jurisdiction":"NCCS"},{"footage":830,"location":"AK-47","jurisdiction":"NCCS"},{"footage":838,"location":"AN-47","jurisdiction":"NCCS"},{"footage":846,"location":"AQ-47","jurisdiction":"NCCS"},{"footage":850,"location":"AT-47","jurisdiction":"NCCS"},{"footage":854,"location":"AW-47","jurisdiction":"NCCS"},{"footage":859,"location":"AY-48","jurisdiction":"NCCS"},{"footage":867,"location":"AW-49","jurisdiction":"NCCS"},{"footage":871,"location":"AT-49","jurisdiction":"NCCS"},{"footage":879,"location":"AQ-49","jurisdiction":"NCCS"},{"footage":884,"location":"AN-49","jurisdiction":"NCCS"},{"footage":892,"location":"AK-49","jurisdiction":"NCCS"},{"footage":896,"location":"AH-49","jurisdiction":"NCCS"},{"footage":900,"location":"AE-49","jurisdiction":"NCCS"},{"footage":905,"location":"AB-50","jurisdiction":"NCCS"},{"footage":915,"location":"AE-51","jurisdiction":"NCCS"},{"footage":924,"location":"AH-51","jurisdiction":"NCCS"},{"footage":935,"location":"AK-51","jurisdiction":"NCCS"},{"footage":939,"location":"AN-51","jurisdiction":"NCCS"},{"footage":948,"location":"AQ-51","jurisdiction":"NCCS"},{"footage":952,"location":"AT-51","jurisdiction":"NCCS"},{"footage":957,"location":"AW-51","jurisdiction":"NCCS"},{"footage":961,"location":"AY-52","jurisdiction":"NCCS"},{"footage":965,"location":"AW-53","jurisdiction":"NCCS"},{"footage":970,"location":"AT-53","jurisdiction":"NCCS"},{"footage":979,"location":"AQ-53","jurisdiction":"NCCS"},{"footage":988,"location":"AN-53","jurisdiction":"NCCS"},{"footage":992,"location":"AK-53","jurisdiction":"NCCS"},{"footage":997,"location":"AH-53","jurisdiction":"NCCS"},{"footage":1001,"location":"AE-53","jurisdiction":"NCCS"},{"footage":1010,"location":"AB-54","jurisdiction":"NCCS"},{"footage":1020,"location":"AE-55","jurisdiction":"NCCS"},{"footage":1029,"location":"AH-55","jurisdiction":"NCCS"},{"footage":1033,"location":"AK-55","jurisdiction":"NCCS"},{"footage":1038,"location":"AN-55","jurisdiction":"NCCS"},{"footage":1047,"location":"AQ-55","jurisdiction":"NCCS"},{"footage":1052,"location":"AT-55","jurisdiction":"NCCS"},{"footage":1057,"location":"AW-55","jurisdiction":"NCCS"},{"footage":1061,"location":"AY-56","jurisdiction":"NCCS"},{"footage":1066,"location":"AW-57","jurisdiction":"NCCS"},{"footage":1076,"location":"AT-57","jurisdiction":"NCCS"},{"footage":1080,"location":"AQ-57","jurisdiction":"NCCS"},{"footage":1090,"location":"AN-57","jurisdiction":"NCCS"},{"footage":1095,"location":"AK-57","jurisdiction":"NCCS"},{"footage":1102,"location":"AH-57","jurisdiction":"NCCS"},{"footage":1109,"location":"AE-57","jurisdiction":"NCCS"},{"footage":1116,"location":"AB-58","jurisdiction":"NCCS"},{"footage":1123,"location":"AE-59","jurisdiction":"NCCS"},{"footage":1129,"location":"AH-59","jurisdiction":"NCCS"},{"footage":1139,"location":"AK-59","jurisdiction":"NCCS"},{"footage":1144,"location":"AN-59","jurisdiction":"NCCS"},{"footage":1149,"location":"AQ-59","jurisdiction":"NCCS"},{"footage":1154,"location":"AT-59","jurisdiction":"NCCS"},{"footage":1159,"location":"AT-61","jurisdiction":"NCCS"},{"footage":1169,"location":"AQ-61","jurisdiction":"NCCS"},{"footage":1174,"location":"AN-61","jurisdiction":"NCCS"},{"footage":1184,"location":"AK-61","jurisdiction":"NCCS"},{"footage":1189,"location":"AH-61","jurisdiction":"NCCS"},{"footage":1194,"location":"AE-61","jurisdiction":"NCCS"},{"footage":1199,"location":"AB-62","jurisdiction":"NCCS"},{"footage":1206,"location":"AE-63","jurisdiction":"NCCS"},{"footage":1215,"location":"AH-63","jurisdiction":"NCCS"},{"footage":1220,"location":"AK-63","jurisdiction":"NCCS"},{"footage":1225,"location":"AN-63","jurisdiction":"NCCS"},{"footage":1230,"location":"AQ-63","jurisdiction":"NCCS"},{"footage":1236,"location":"AT-63","jurisdiction":"NCCS"},{"footage":1246,"location":"AT-65","jurisdiction":"NCCS"},{"footage":1251,"location":"AQ-65","jurisdiction":"NCCS"},{"footage":1257,"location":"AN-65","jurisdiction":"NCCS"},{"footage":1268,"location":"AH-65","jurisdiction":"NCCS"},{"footage":1273,"location":"AE-65","jurisdiction":"NCCS"},{"footage":1278,"location":"AB-70","jurisdiction":"NCCS"},{"footage":1284,"location":"AE-67","jurisdiction":"NCCS"},{"footage":1292,"location":"AH-67","jurisdiction":"NCCS"},{"footage":1300,"location":"AK-67","jurisdiction":"NCCS"},{"footage":1305,"location":"AN-67","jurisdiction":"NCCS"},{"footage":1311,"location":"AQ-67","jurisdiction":"NCCS"},{"footage":1316,"location":"AT-67","jurisdiction":"NCCS"},{"footage":1322,"location":"AT-69","jurisdiction":"NCCS"},{"footage":1328,"location":"AQ-69","jurisdiction":"NCCS"},{"footage":1333,"location":"AN-69","jurisdiction":"NCCS"},{"footage":1339,"location":"AK-69","jurisdiction":"NCCS"},{"footage":1348,"location":"AH-69","jurisdiction":"NCCS"},{"footage":1356,"location":"AE-69","jurisdiction":"NCCS"},{"footage":1361,"location":"AB-70","jurisdiction":"NCCS"},{"footage":1367,"location":"AE-71","jurisdiction":"NCCS"},{"footage":1373,"location":"AH-71","jurisdiction":"NCCS"},{"footage":1378,"location":"AK-71","jurisdiction":"NCCS"},{"footage":1390,"location":"AM-71","jurisdiction":"NCCS"}],"zone2":[{"footage":20,"location":"BA-32","jurisdiction":"NCCS"},{"footage":26,"location":"BA-35","jurisdiction":"NCCS"},{"footage":32,"location":"BA-38","jurisdiction":"NCCS"},{"footage":37,"location":"BA-41","jurisdiction":"NCCS"},{"footage":41,"location":"BA-44","jurisdiction":"NCCS"},{"footage":47,"location":"BA-47","jurisdiction":"NCCS"},{"footage":53,"location":"BA-50","jurisdiction":"NCCS"},{"footage":58,"location":"BA-53","jurisdiction":"NCCS"},{"footage":64,"location":"BA-56","jurisdiction":"NCCS"},{"footage":71,"location":"BA-59","jurisdiction":"NCCS"},{"footage":77,"location":"BA-62","jurisdiction":"NCCS"},{"footage":84,"location":"BA-65","jurisdiction":"NCCS"},{"footage":90,"location":"BA-68","jurisdiction":"NCCS"},{"footage":97,"location":"BC-68","jurisdiction":"NCCS"},{"footage":104,"location":"BC-65","jurisdiction":"NCCS"},{"footage":110,"location":"BC-62","jurisdiction":"NCCS"},{"footage":115,"location":"BC-59","jurisdiction":"NCCS"},{"footage":122,"location":"BC-56","jurisdiction":"NCCS"},{"footage":128,"location":"BC-53","jurisdiction":"NCCS"},{"footage":133,"location":"BC-50","jurisdiction":"ITSD"},{"footage":138,"location":"BC-47","jurisdiction":"ITSD"},{"footage":145,"location":"BC-44","jurisdiction":"ITSD"},{"footage":152,"location":"BC-41","jurisdiction":"ITSD"},{"footage":159,"location":"BC-38","jurisdiction":"ITSD"},{"footage":164,"location":"BC-35","jurisdiction":"ITSD"},{"footage":171,"location":"BC-32","jurisdiction":"ITSD"},{"footage":174,"location":"BD-30","jurisdiction":"ITSD"},{"footage":185,"location":"BE-32","jurisdiction":"ITSD"},{"footage":187,"location":"BE-35","jurisdiction":"ITSD"},{"footage":192,"location":"BE-38","jurisdiction":"ITSD"},{"footage":199,"location":"BE-41","jurisdiction":"ITSD"},{"footage":207,"location":"BE-44","jurisdiction":"ITSD"},{"footage":212,"location":"BE-47","jurisdiction":"ITSD"},{"footage":219,"location":"BE-50","jurisdiction":"ITSD"},{"footage":224,"location":"BE-53","jurisdiction":"NCCS"},{"footage":229,"location":"BE-56","jurisdiction":"NCCS"},{"footage":237,"location":"BE-59","jurisdiction":"NCCS"},{"footage":244,"location":"BE-62","jurisdiction":"NCCS"},{"footage":249,"location":"BE-65","jurisdiction":"NCCS"},{"footage":255,"location":"BE-68","jurisdiction":"NCCS"},{"footage":262,"location":"BG-68","jurisdiction":"NCCS"},{"footage":268,"location":"BG-65","jurisdiction":"NCCS"},{"footage":275,"location":"BG-62","jurisdiction":"NCCS"},{"footage":283,"location":"BG-59","jurisdiction":"NCCS"},{"footage":289,"location":"BG-56","jurisdiction":"NCCS"},{"footage":294,"location":"BG-53","jurisdiction":"NCCS"},{"footage":302,"location":"BG-50","jurisdiction":"ITSD"},{"footage":307,"location":"BG-47","jurisdiction":"ITSD"},{"footage":315,"location":"BG-44","jurisdiction":"ITSD"},{"footage":321,"location":"BG-41","jurisdiction":"ITSD"},{"footage":329,"location":"BG-38","jurisdiction":"ITSD"},{"footage":334,"location":"BG-35","jurisdiction":"ITSD"},{"footage":340,"location":"BG-32","jurisdiction":"ITSD"},{"footage":345,"location":"BH-30","jurisdiction":"ITSD"},{"footage":353,"location":"BI-32","jurisdiction":"ITSD"},{"footage":359,"location":"BI-35","jurisdiction":"ITSD"},{"footage":368,"location":"BI-38","jurisdiction":"ITSD"},{"footage":371,"location":"BI-41","jurisdiction":"ITSD"},{"footage":374,"location":"BI-44","jurisdiction":"ITSD"},{"footage":377,"location":"BI-47","jurisdiction":"ITSD"},{"footage":382,"location":"BI-50","jurisdiction":"ITSD"},{"footage":388,"location":"BI-53","jurisdiction":"NCCS"},{"footage":394,"location":"BI-56","jurisdiction":"NCCS"},{"footage":402,"location":"BI-59","jurisdiction":"NCCS"},{"footage":408,"location":"BI-62","jurisdiction":"NCCS"},{"footage":414,"location":"BI-65","jurisdiction":"NCCS"},{"footage":420,"location":"BI-68","jurisdiction":"NCCS"},{"footage":426,"location":"BK-68","jurisdiction":"NCCS"},{"footage":432,"location":"BK-65","jurisdiction":"NCCS"},{"footage":441,"location":"BK-62","jurisdiction":"NCCS"},{"footage":447,"location":"BK-59","jurisdiction":"NCCS"},{"footage":453,"location":"BK-56","jurisdiction":"NCCS"},{"footage":459,"location":"BK-53","jurisdiction":"NCCS"},{"footage":465,"location":"BK-50","jurisdiction":"ITSD"},{"footage":471,"location":"BK-47","jurisdiction":"ITSD"},{"footage":477,"location":"BK-44","jurisdiction":"ITSD"},{"footage":490,"location":"BK-38","jurisdiction":"ITSD"},{"footage":494,"location":"BK-35","jurisdiction":"ITSD"},{"footage":499,"location":"BK-32","jurisdiction":"ITSD"},{"footage":506,"location":"BL-30","jurisdiction":"ITSD"},{"footage":512,"location":"BM-32","jurisdiction":"ITSD"},{"footage":518,"location":"BM-35","jurisdiction":"ITSD"},{"footage":525,"location":"BM-38","jurisdiction":"ITSD"},{"footage":531,"location":"BM-41","jurisdiction":"ITSD"},{"footage":538,"location":"BM-44","jurisdiction":"ITSD"},{"footage":541,"location":"BM-47","jurisdiction":"ITSD"},{"footage":547,"location":"BM-50","jurisdiction":"ITSD"},{"footage":551,"location":"BM-53","jurisdiction":"NCCS"},{"footage":557,"location":"BM-56","jurisdiction":"NCCS"},{"footage":564,"location":"BM-59","jurisdiction":"NCCS"},{"footage":570,"location":"BM-62","jurisdiction":"NCCS"},{"footage":577,"location":"BM-65","jurisdiction":"NCCS"},{"footage":584,"location":"BM-68","jurisdiction":"NCCS"},{"footage":591,"location":"BO-68","jurisdiction":"NCCS"},{"footage":597,"location":"BO-65","jurisdiction":"NCCS"},{"footage":604,"location":"BO-62","jurisdiction":"NCCS"},{"footage":611,"location":"BO-59","jurisdiction":"NCCS"},{"footage":618,"location":"BO-56","jurisdiction":"NCCS"},{"footage":625,"location":"BO-53","jurisdiction":"NCCS"},{"footage":632,"location":"BO-50","jurisdiction":"ITSD"},{"footage":637,"location":"BO-47","jurisdiction":"ITSD"},{"footage":642,"location":"BO-44","jurisdiction":"ITSD"},{"footage":649,"location":"BO-41","jurisdiction":"ITSD"},{"footage":657,"location":"BO-38","jurisdiction":"ITSD"},{"footage":662,"location":"BO-35","jurisdiction":"ITSD"},{"footage":667,"location":"BO-32","jurisdiction":"ITSD"},{"footage":671,"location":"BP-30","jurisdiction":"ITSD"},{"footage":678,"location":"BQ-32","jurisdiction":"ITSD"},{"footage":685,"location":"BQ-35","jurisdiction":"ITSD"},{"footage":696,"location":"BQ-38","jurisdiction":"ITSD"},{"footage":703,"location":"BQ-41","jurisdiction":"ITSD"},{"footage":711,"location":"BQ-44","jurisdiction":"ITSD"},{"footage":716,"location":"BQ-47","jurisdiction":"ITSD"},{"footage":722,"location":"BQ-50","jurisdiction":"ITSD"},{"footage":727,"location":"BQ-53","jurisdiction":"NCCS"},{"footage":733,"location":"BQ-56","jurisdiction":"NCCS"},{"footage":737,"location":"BQ-59","jurisdiction":"NCCS"},{"footage":741,"location":"BQ-62","jurisdiction":"NCCS"},{"footage":744,"location":"BQ-65","jurisdiction":"NCCS"},{"footage":748,"location":"BQ-68","jurisdiction":"NCCS"},{"footage":760,"location":"BS-65","jurisdiction":"ITSD"},{"footage":767,"location":"BS-62","jurisdiction":"ITSD"},{"footage":775,"location":"BS-59","jurisdiction":"ITSD"},{"footage":779,"location":"BS-56","jurisdiction":"ITSD"},{"footage":787,"location":"BS-53","jurisdiction":"ITSD"},{"footage":791,"location":"BS-50","jurisdiction":"ITSD"},{"footage":799,"location":"BS-47","jurisdiction":"ITSD"},{"footage":807,"location":"BS-44","jurisdiction":"ITSD"},{"footage":847,"location":"BU-35","jurisdiction":"ITSD"},{"footage":855,"location":"BU-38","jurisdiction":"ITSD"},{"footage":859,"location":"BU-41","jurisdiction":"ITSD"},{"footage":867,"location":"BU-44","jurisdiction":"ITSD"},{"footage":871,"location":"BU-47","jurisdiction":"ITSD"},{"footage":875,"location":"BU-50","jurisdiction":"ITSD"},{"footage":884,"location":"BU-53","jurisdiction":"ITSD"},{"footage":892,"location":"BU-56","jurisdiction":"ITSD"},{"footage":905,"location":"BU-59","jurisdiction":"ITSD"},{"footage":913,"location":"BU-62","jurisdiction":"ITSD"},{"footage":918,"location":"BU-65","jurisdiction":"ITSD"},{"footage":926,"location":"BU-68","jurisdiction":"ITSD"},{"footage":931,"location":"BW-68","jurisdiction":"ITSD"},{"footage":937,"location":"BW-65","jurisdiction":"ITSD"},{"footage":943,"location":"BW-62","jurisdiction":"ITSD"},{"footage":950,"location":"BW-59","jurisdiction":"ITSD"},{"footage":958,"location":"BW-56","jurisdiction":"ITSD"},{"footage":964,"location":"BW-53","jurisdiction":"ITSD"},{"footage":971,"location":"BW-50","jurisdiction":"ITSD"},{"footage":976,"location":"BW-47","jurisdiction":"ITSD"},{"footage":981,"location":"BW-44","jurisdiction":"ITSD"},{"footage":986,"location":"BW-41","jurisdiction":"ITSD"},{"footage":990,"location":"BW-38","jurisdiction":"ITSD"},{"footage":996,"location":"BW-35","jurisdiction":"ITSD"},{"footage":1001,"location":"BW-32","jurisdiction":"ITSD"},{"footage":1006,"location":"BX-30","jurisdiction":"ITSD"},{"footage":1012,"location":"BY-32","jurisdiction":"ITSD"},{"footage":1017,"location":"BY-35","jurisdiction":"ITSD"},{"footage":1021,"location":"BY-38","jurisdiction":"ITSD"},{"footage":1030,"location":"BY-41","jurisdiction":"ITSD"},{"footage":1035,"location":"BY-44","jurisdiction":"ITSD"},{"footage":1040,"location":"BY-47","jurisdiction":"ITSD"},{"footage":1049,"location":"BY-50","jurisdiction":"ITSD"},{"footage":1056,"location":"BY-53","jurisdiction":"ITSD"},{"footage":1063,"location":"BY-56","jurisdiction":"ITSD"},{"footage":1069,"location":"BY-59","jurisdiction":"ITSD"},{"footage":1075,"location":"BY-62","jurisdiction":"ITSD"},{"footage":1080,"location":"BY-65","jurisdiction":"ITSD"},{"footage":1085,"location":"BY-68","jurisdiction":"ITSD"},{"footage":1091,"location":"CA-68","jurisdiction":"ITSD"},{"footage":1096,"location":"CA-65","jurisdiction":"ITSD"},{"footage":1102,"location":"CA-62","jurisdiction":"ITSD"},{"footage":1107,"location":"CA-59","jurisdiction":"ITSD"},{"footage":1113,"location":"CA-56","jurisdiction":"ITSD"},{"footage":1119,"location":"CA-53","jurisdiction":"ITSD"},{"footage":1124,"location":"CA-50","jurisdiction":"ITSD"},{"footage":1130,"location":"CA-47","jurisdiction":"ITSD"},{"footage":1137,"location":"CA-44","jurisdiction":"ITSD"},{"footage":1143,"location":"CA-41","jurisdiction":"ITSD"},{"footage":1149,"location":"CA-38","jurisdiction":"ITSD"},{"footage":1154,"location":"CA-35","jurisdiction":"ITSD"},{"footage":1159,"location":"CA-32","jurisdiction":"ITSD"},{"footage":1164,"location":"CB-30","jurisdiction":"ITSD"},{"footage":1170,"location":"CC-32","jurisdiction":"ITSD"},{"footage":1175,"location":"CC-35","jurisdiction":"ITSD"},{"footage":1181,"location":"CC-38","jurisdiction":"ITSD"},{"footage":1187,"location":"CC-41","jurisdiction":"ITSD"},{"footage":1193,"location":"CC-44","jurisdiction":"ITSD"},{"footage":1199,"location":"CC-47","jurisdiction":"ITSD"},{"footage":1205,"location":"CC-50","jurisdiction":"ITSD"},{"footage":1211,"location":"CC-53","jurisdiction":"ITSD"},{"footage":1217,"location":"CC-56","jurisdiction":"ITSD"},{"footage":1224,"location":"CC-59","jurisdiction":"ITSD"},{"footage":1230,"location":"CC-62","jurisdiction":"ITSD"},{"footage":1235,"location":"CC-65","jurisdiction":"ITSD"},{"footage":1241,"location":"CC-68","jurisdiction":"ITSD"},{"footage":1247,"location":"CE-68","jurisdiction":"ITSD"},{"footage":1254,"location":"CE-65","jurisdiction":"ITSD"},{"footage":1260,"location":"CE-62","jurisdiction":"ITSD"},{"footage":1267,"location":"CE-59","jurisdiction":"ITSD"},{"footage":1273,"location":"CE-56","jurisdiction":"ITSD"},{"footage":1280,"location":"CE-53","jurisdiction":"ITSD"},{"footage":1286,"location":"CE-50","jurisdiction":"ITSD"},{"footage":1293,"location":"CE-47","jurisdiction":"ITSD"},{"footage":1300,"location":"CE-44","jurisdiction":"ITSD"},{"footage":1307,"location":"CE-41","jurisdiction":"ITSD"},{"footage":1314,"location":"CE-38","jurisdiction":"ITSD"},{"footage":1321,"location":"CE-35","jurisdiction":"ITSD"},{"footage":1328,"location":"CE-32","jurisdiction":"ITSD"},{"footage":1333,"location":"CF-30","jurisdiction":"ITSD"},{"footage":1339,"location":"CG-32","jurisdiction":"ITSD"},{"footage":1344,"location":"CG-35","jurisdiction":"ITSD"},{"footage":1350,"location":"CG-38","jurisdiction":"ITSD"},{"footage":1356,"location":"CG-41","jurisdiction":"ITSD"},{"footage":1361,"location":"CG-44","jurisdiction":"ITSD"},{"footage":1367,"location":"CG-47","jurisdiction":"ITSD"},{"footage":1373,"location":"CG-50","jurisdiction":"ITSD"},{"footage":1379,"location":"CG-53","jurisdiction":"ITSD"},{"footage":1384,"location":"CG-56","jurisdiction":"ITSD"},{"footage":1389,"location":"CG-59","jurisdiction":"ITSD"},{"footage":1395,"location":"CG-62","jurisdiction":"ITSD"},{"footage":1401,"location":"CG-65","jurisdiction":"ITSD"},{"footage":1407,"location":"CG-68","jurisdiction":"ITSD"},{"footage":1413,"location":"CI-68","jurisdiction":"ITSD"},{"footage":1421,"location":"CI-65","jurisdiction":"ITSD"},{"footage":1427,"location":"CI-62","jurisdiction":"ITSD"},{"footage":1433,"location":"CI-59","jurisdiction":"ITSD"},{"footage":1438,"location":"CI-56","jurisdiction":"ITSD"},{"footage":1446,"location":"CI-53","jurisdiction":"ITSD"},{"footage":1453,"location":"CI-50","jurisdiction":"ITSD"},{"footage":1458,"location":"CI-47","jurisdiction":"ITSD"},{"footage":1463,"location":"CI-44","jurisdiction":"ITSD"},{"footage":1469,"location":"CI-41","jurisdiction":"ITSD"},{"footage":1475,"location":"CI-38","jurisdiction":"ITSD"},{"footage":1480,"location":"CI-35","jurisdiction":"ITSD"},{"footage":1486,"location":"CI-32","jurisdiction":"ITSD"},{"footage":1491,"location":"CJ-30","jurisdiction":"ITSD"},{"footage":1497,"location":"CK-32","jurisdiction":"ITSD"},{"footage":1502,"location":"CK-35","jurisdiction":"ITSD"},{"footage":1508,"location":"CK-38","jurisdiction":"ITSD"},{"footage":1515,"location":"CK-41","jurisdiction":"ITSD"},{"footage":1521,"location":"CK-44","jurisdiction":"ITSD"},{"footage":1526,"location":"CK-47","jurisdiction":"ITSD"},{"footage":1532,"location":"CK-50","jurisdiction":"ITSD"},{"footage":1539,"location":"CK-53","jurisdiction":"ITSD"},{"footage":1546,"location":"CK-56","jurisdiction":"ITSD"},{"footage":1553,"location":"CK-59","jurisdiction":"ITSD"},{"footage":1560,"location":"CK-62","jurisdiction":"ITSD"},{"footage":1566,"location":"CK-65","jurisdiction":"ITSD"},{"footage":1578,"location":"CM-68","jurisdiction":"ITSD"},{"footage":1584,"location":"CM-65","jurisdiction":"ITSD"},{"footage":1591,"location":"CM-62","jurisdiction":"ITSD"},{"footage":1596,"location":"CM-59","jurisdiction":"ITSD"},{"footage":1610,"location":"CM-53","jurisdiction":"ITSD"},{"footage":1616,"location":"CM-50","jurisdiction":"ITSD"},{"footage":1623,"location":"CM-47","jurisdiction":"ITSD"},{"footage":1629,"location":"CM-44","jurisdiction":"ITSD"},{"footage":1635,"location":"CM-41","jurisdiction":"ITSD"},{"footage":1640,"location":"CM-38","jurisdiction":"ITSD"},{"footage":1646,"location":"CM-35","jurisdiction":"ITSD"},{"footage":1651,"location":"CM-32","jurisdiction":"ITSD"},{"footage":1657,"location":"CN-30","jurisdiction":"ITSD"},{"footage":1664,"location":"CO-32","jurisdiction":"ITSD"},{"footage":1670,"location":"CO-35","jurisdiction":"ITSD"},{"footage":1675,"location":"CO-38","jurisdiction":"ITSD"},{"footage":1681,"location":"CO-41","jurisdiction":"ITSD"},{"footage":1688,"location":"CO-44","jurisdiction":"ITSD"},{"footage":1693,"location":"CO-47","jurisdiction":"ITSD"},{"footage":1699,"location":"CO-50","jurisdiction":"ITSD"},{"footage":1706,"location":"CO-53","jurisdiction":"ITSD"},{"footage":1713,"location":"CO-56","jurisdiction":"ITSD"},{"footage":1720,"location":"CO-59","jurisdiction":"ITSD"},{"footage":1728,"location":"CO-62","jurisdiction":"ITSD"},{"footage":1735,"location":"CO-65","jurisdiction":"ITSD"},{"footage":1741,"location":"CO-68","jurisdiction":"ITSD"},{"footage":1747,"location":"CO-71","jurisdiction":"ITSD"},{"footage":1753,"location":"CP-74","jurisdiction":"ITSD"},{"footage":1758,"location":"CQ-71","jurisdiction":"ITSD"},{"footage":1766,"location":"CQ-68","jurisdiction":"ITSD"},{"footage":1774,"location":"CQ-65","jurisdiction":"ITSD"},{"footage":1783,"location":"CQ-62","jurisdiction":"ITSD"},{"footage":1790,"location":"CQ-59","jurisdiction":"ITSD"},{"footage":1799,"location":"CQ-56","jurisdiction":"ITSD"},{"footage":1811,"location":"CR-53","jurisdiction":"ITSD"},{"footage":1816,"location":"CS-56","jurisdiction":"ITSD"},{"footage":1821,"location":"CS-59","jurisdiction":"ITSD"},{"footage":1826,"location":"CS-62","jurisdiction":"ITSD"},{"footage":1832,"location":"CS-65","jurisdiction":"ITSD"},{"footage":1837,"location":"CS-68","jurisdiction":"ITSD"},{"footage":1842,"location":"CS-71","jurisdiction":"ITSD"},{"footage":1847,"location":"CT-74","jurisdiction":"ITSD"},{"footage":1853,"location":"CU-71","jurisdiction":"ITSD"},{"footage":1860,"location":"CU-68","jurisdiction":"ITSD"},{"footage":1867,"location":"CU-65","jurisdiction":"ITSD"},{"footage":1873,"location":"CU-62","jurisdiction":"ITSD"},{"footage":1880,"location":"CU-59","jurisdiction":"ITSD"},{"footage":1886,"location":"CU-56","jurisdiction":"ITSD"},{"footage":1892,"location":"CV-53","jurisdiction":"ITSD"},{"footage":1899,"location":"CW-56","jurisdiction":"ITSD"},{"footage":1905,"location":"CW-59","jurisdiction":"ITSD"},{"footage":1912,"location":"CW-62","jurisdiction":"ITSD"},{"footage":1918,"location":"CW-65","jurisdiction":"ITSD"},{"footage":1926,"location":"CW-68","jurisdiction":"ITSD"},{"footage":1932,"location":"CW-71","jurisdiction":"ITSD"},{"footage":1938,"location":"CX-74","jurisdiction":"ITSD"},{"footage":1945,"location":"CY-71","jurisdiction":"ITSD"},{"footage":1951,"location":"CY-68","jurisdiction":"ITSD"},{"footage":1958,"location":"CY-65","jurisdiction":"ITSD"},{"footage":1965,"location":"CY-62","jurisdiction":"ITSD"},{"footage":1971,"location":"CY-59","jurisdiction":"ITSD"},{"footage":1978,"location":"CY-56","jurisdiction":"ITSD"},{"footage":1984,"location":"CY-53","jurisdiction":"ITSD"},{"footage":1990,"location":"CV-53","jurisdiction":"ITSD"},{"footage":1995,"location":"CS-53","jurisdiction":"ITSD"},{"footage":2000,"location":"CP-53","jurisdiction":"ITSD"},{"footage":2006,"location":"CO-51","jurisdiction":"ITSD"},{"footage":2012,"location":"CO-48","jurisdiction":"ITSD"},{"footage":2017,"location":"CP-46","jurisdiction":"ITSD"},{"footage":2021,"location":"CQ-44","jurisdiction":"ITSD"},{"footage":2025,"location":"CQ-41","jurisdiction":"ITSD"},{"footage":2030,"location":"CQ-38","jurisdiction":"ITSD"},{"footage":2035,"location":"CQ-35","jurisdiction":"ITSD"},{"footage":2043,"location":"CS-35","jurisdiction":"ITSD"},{"footage":2049,"location":"CS-38","jurisdiction":"ITSD"},{"footage":2055,"location":"CS-41","jurisdiction":"ITSD"},{"footage":2060,"location":"CS-44","jurisdiction":"ITSD"},{"footage":2066,"location":"CT-46","jurisdiction":"ITSD"},{"footage":2071,"location":"CU-44","jurisdiction":"ITSD"},{"footage":2076,"location":"CU-41","jurisdiction":"ITSD"},{"footage":2080,"location":"CU-38","jurisdiction":"ITSD"},{"footage":2093,"location":"CW-35","jurisdiction":"ITSD"},{"footage":2098,"location":"CW-38","jurisdiction":"ITSD"},{"footage":2102,"location":"CW-41","jurisdiction":"ITSD"},{"footage":2107,"location":"CW-44","jurisdiction":"ITSD"},{"footage":2113,"location":"CX-46","jurisdiction":"ITSD"},{"footage":2118,"location":"CY-44","jurisdiction":"ITSD"},{"footage":2125,"location":"CY-41","jurisdiction":"ITSD"},{"footage":2132,"location":"CY-38","jurisdiction":"ITSD"},{"footage":2141,"location":"CY-34","jurisdiction":"ITSD"}]};
+    const zoneSelect = document.getElementById('zone');
+    const footageInput = document.getElementById('footage');
+    const locateButton = document.getElementById('locate');
+    const result = document.getElementById('result');
+    const locationOutput = document.getElementById('location');
+    const badge = document.getElementById('badge');
+    const alertText = document.getElementById('alert');
+    const detail = document.getElementById('detail');
+    const edgeNote = document.getElementById('edgeNote');
+    const rangeHint = document.getElementById('rangeHint');
+
+    function formatFeet(value) {
+      return new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(value) + ' ft';
+    }
+
+    function nearestPoint(points, target) {
+      let low = 0;
+      let high = points.length - 1;
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        if (points[mid].footage === target) return points[mid];
+        if (points[mid].footage < target) low = mid + 1;
+        else high = mid - 1;
+      }
+      if (high < 0) return points[0];
+      if (low >= points.length) return points[points.length - 1];
+      const below = points[high];
+      const above = points[low];
+      return (target - below.footage <= above.footage - target) ? below : above;
+    }
+
+    function updateRangeHint() {
+      const points = LOOKUP_DATA[zoneSelect.value];
+      rangeHint.textContent = 'Mapped points: ' + formatFeet(points[0].footage) + '–' + formatFeet(points[points.length - 1].footage);
+      result.className = 'result';
+    }
+
+    function showLookup() {
+      const raw = footageInput.value.trim();
+      const target = Number(raw);
+      if (raw === '' || !Number.isFinite(target) || target < 0) {
+        result.className = 'result warning show';
+        locationOutput.textContent = '—';
+        badge.textContent = 'CHECK ENTRY';
+        badge.style.background = '#8a5a00';
+        alertText.textContent = 'Enter a valid footage reading of zero or greater.';
+        detail.textContent = '';
+        edgeNote.className = 'edge-note';
+        footageInput.focus();
+        return;
+      }
+
+      const points = LOOKUP_DATA[zoneSelect.value];
+      const point = nearestPoint(points, target);
+      const isItsd = point.jurisdiction === 'ITSD';
+      result.className = 'result ' + (isItsd ? 'itsd' : 'nccs') + ' show';
+      badge.style.background = '';
+      locationOutput.textContent = point.location;
+      badge.textContent = isItsd ? 'ITSD AREA' : 'NCCS AREA';
+      alertText.textContent = isItsd
+        ? 'OUTSIDE NCCS JURISDICTION — no NCCS response required.'
+        : 'Within NCCS jurisdiction.';
+      const difference = Math.abs(target - point.footage);
+      detail.textContent = 'Entered ' + formatFeet(target) + ' · nearest mapped point ' + formatFeet(point.footage) +
+        (difference ? ' · difference ' + formatFeet(difference) : ' · exact match');
+
+      const outside = target < points[0].footage || target > points[points.length - 1].footage;
+      edgeNote.className = 'edge-note' + (outside ? ' show' : '');
+      edgeNote.textContent = outside ? 'Reading is outside the mapped footage span; the nearest endpoint was used.' : '';
+    }
+
+    zoneSelect.addEventListener('change', updateRangeHint);
+    locateButton.addEventListener('click', showLookup);
+    footageInput.addEventListener('keydown', event => { if (event.key === 'Enter') showLookup(); });
+    updateRangeHint();
+  </script>
+</body>
+</html>
